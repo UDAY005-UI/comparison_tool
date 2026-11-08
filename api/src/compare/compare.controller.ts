@@ -7,7 +7,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { Basis, CompareService } from './compare.service';
+import { CompareService } from './compare.service';
 
 interface UploadedFilesMap {
   fileA?: Express.Multer.File[];
@@ -48,7 +48,7 @@ export class CompareController {
     return this.service.createSession(
       fileA.buffer,
       fileB.buffer,
-      body.basis as Basis,
+      body.basis,
       Number(body.keyA),
       Number(body.keyB),
       Number(body.headerA),
@@ -61,7 +61,11 @@ export class CompareController {
     if (!body?.sessionId) {
       throw new BadRequestException('sessionId is required');
     }
-    return this.service.run(body.sessionId, Number(body.colA), Number(body.colB));
+    return this.service.run(
+      body.sessionId,
+      Number(body.colA),
+      Number(body.colB),
+    );
   }
 
   @Post('run-range')

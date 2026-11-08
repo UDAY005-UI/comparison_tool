@@ -15,14 +15,18 @@ export class KeepAliveService implements OnModuleInit, OnModuleDestroy {
     const intervalMs = Number(process.env.KEEP_ALIVE_INTERVAL_MS) || 10 * 60 * 1000;
     const url = `${baseUrl.replace(/\/$/, '')}/health`;
 
-    this.timer = setInterval(async () => {
-      try {
-        const res = await fetch(url);
-        this.logger.log(`Ping ${url} -> ${res.status}`);
-      } catch (err) {
-        this.logger.error(`Ping failed: ${err instanceof Error ? err.message : err}`);
-      }
+    this.timer = setInterval(() => {
+      void this.ping(url);
     }, intervalMs);
+  }
+
+  private async ping(url: string) {
+    try {
+      const res = await fetch(url);
+      this.logger.log(`Ping ${url} -> ${res.status}`);
+    } catch (err) {
+      this.logger.error(`Ping failed: ${err instanceof Error ? err.message : String(err)}`);
+    }
   }
 
   onModuleDestroy() {
